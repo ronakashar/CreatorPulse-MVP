@@ -1,0 +1,12 @@
+[theme]
+primaryColor = "#7C3AED"        # purple-600
+backgroundColor = "#0B1021"     # dark navy
+secondaryBackgroundColor = "#11162B"
+textColor = "#E6E8F9"
+font = "sans serif"
+
+[server]
+headless = true
+enableCORS = false
+
+

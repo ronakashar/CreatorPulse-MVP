@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+*.sqlite3
+
+# Streamlit
+.streamlit/secrets.toml
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# App secrets
+app/.env

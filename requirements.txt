@@ -1,0 +1,11 @@
+streamlit
+supabase
+python-dotenv
+snscrape
+yt-dlp
+feedparser
+groq
+resend
+tenacity
+markdown
+requests
