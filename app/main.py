@@ -2,7 +2,11 @@ import os
 from pathlib import Path
 
 import streamlit as st
+from dotenv import load_dotenv
 from utils.ui import inject_global_css
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize monitoring
 try:
@@ -34,10 +38,14 @@ def require_env():
         if not os.getenv(key):
             missing.append(key)
     if missing:
-        st.warning(
-            "Missing environment variables: " + ", ".join(missing) + 
-            ". Create an app/.env (or set system env) and restart."
+        st.error(
+            f"Missing environment variables: {', '.join(missing)}"
         )
+        st.info(
+            "**For Streamlit Cloud:** Go to your app settings → Secrets and add these variables. "
+            "**For local development:** Create a `.env` file in your project root."
+        )
+        st.stop()
 
 
 def ensure_session_keys():
