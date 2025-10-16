@@ -9,3 +9,11 @@ resend
 tenacity
 markdown
 requests
+pytz
+stripe
+pandas
+plotly
+sentry-sdk
+redis
+pytest
+pytest-asyncio

@@ -152,12 +152,13 @@ def _fetch_rss(feed_url: str) -> List[Dict[str, Any]]:
     return items
 
 
-def fetch_all_sources(*, user_id: str) -> int:
-    sources = list_sources(user_id=user_id)
+def fetch_all_sources(*, user_id: str, workspace_id: str = None) -> int:
+    sources = list_sources(user_id=user_id, workspace_id=workspace_id)
     collected: List[Dict[str, Any]] = []
     for s in sources:
         stype = s.get("source_type")
         sval = s.get("source_value", "")
+        boost_factor = s.get("boost_factor", 1.0)
         subitems: List[Dict[str, Any]] = []
         if stype == "twitter":
             subitems = _fetch_twitter(sval)
@@ -165,10 +166,19 @@ def fetch_all_sources(*, user_id: str) -> int:
             subitems = _fetch_youtube(sval)
         elif stype == "rss":
             subitems = _fetch_rss(sval)
+        
+        # Apply boost factor by duplicating items
+        boosted_items = []
         for it in subitems:
             it["source_id"] = s.get("id")
-        collected.extend(subitems)
+            it["workspace_id"] = workspace_id
+            # Duplicate items based on boost factor
+            num_copies = max(1, int(boost_factor))
+            for _ in range(num_copies):
+                boosted_items.append(dict(it))
+        
+        collected.extend(boosted_items)
 
-    return save_content_items(user_id=user_id, items=collected)
+    return save_content_items(user_id=user_id, items=collected, workspace_id=workspace_id)
 
 

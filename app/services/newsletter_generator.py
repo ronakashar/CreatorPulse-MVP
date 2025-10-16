@@ -2,6 +2,7 @@ from typing import List
 
 from .supabase_client import list_style_files, download_style_file, list_recent_content, save_draft
 from .groq_client import generate_draft as groq_generate
+from .trend_engine import compute_trends
 
 
 def _load_style_samples(user_id: str, max_files: int = 3, max_chars: int = 6000) -> List[str]:
@@ -22,7 +23,7 @@ def _load_style_samples(user_id: str, max_files: int = 3, max_chars: int = 6000)
     return samples
 
 
-def generate_and_save_draft(*, user_id: str, selected_item_ids: list[int] | None = None, temperature: float = 0.7, num_links: int = 5) -> str:
+def generate_and_save_draft(*, user_id: str, selected_item_ids: list[int] | None = None, temperature: float = 0.7, num_links: int = 5, num_trends: int = 3, include_intro: bool = True, include_links: bool = True, include_trends: bool = True) -> str:
     content_items = list_recent_content(user_id=user_id, limit=50)
     if selected_item_ids:
         id_set = set(selected_item_ids)
@@ -30,7 +31,20 @@ def generate_and_save_draft(*, user_id: str, selected_item_ids: list[int] | None
     if not content_items:
         return ""
     style_samples = _load_style_samples(user_id)
-    draft_text = groq_generate(style_samples, content_items, creator_name="Creator", temperature=temperature, num_links=num_links)
+    trend_pairs = compute_trends(content_items)
+    trend_terms = [t for t, _ in trend_pairs]
+    draft_text = groq_generate(
+        style_samples, 
+        content_items, 
+        creator_name="Creator", 
+        temperature=temperature, 
+        num_links=num_links, 
+        trends=trend_terms, 
+        num_trends=num_trends,
+        include_intro=include_intro,
+        include_links=include_links,
+        include_trends=include_trends
+    )
     if draft_text:
         save_draft(user_id, draft_text)
     return draft_text
